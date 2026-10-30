@@ -1,5 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import router from "./routes/index.js";
+import mongoose from 'mongoose';
 import { logger } from './middleware/logger.js';
 import {errorHandler, notFoundHandler} from './middleware/error.js'
 
@@ -31,7 +35,16 @@ app.get("/health", (req, res): void => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+const port = process.env.MONGO_URI;
+
+mongoose.connect(process.env.MONGO_URI!)
+.then(()=> {
+    app.listen(port, () => {
+        console.log('MongoDB connected');
+        console.log(`Server running on port ${port}`);
+        console.log(process.env.MONGO_URI, process.env.NEBIUS_API_KEY);
+    })
+}) 
+.catch((err) => {
+    console.error('Connection error', err)
+})
