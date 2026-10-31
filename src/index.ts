@@ -8,7 +8,7 @@ import { logger } from './middleware/logger.js';
 import {errorHandler, notFoundHandler} from './middleware/error.js'
 
 const app = express();
-
+const port = process.env.PORT || 3000;
 
 app.use(logger)
 app.use(express.json());
@@ -35,7 +35,6 @@ app.get("/health", (req, res): void => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-const port = process.env.MONGO_URI;
 
 mongoose.connect(process.env.MONGO_URI!)
 .then(()=> {

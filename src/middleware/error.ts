@@ -8,19 +8,19 @@ next: NextFunction,
 ): void {
     console.error(err);
 
-
-    const message = `An error has occurred on the server`;
-
     res.status(500).json({
-        error: message
+        success: false,
+        data: null,
+        error: { message: `An error has occurred on the server` } 
     })
     next();
 };
 
 function notFoundHandler(req: Request, res: Response): void {   
-
-res.status(404).json({  
-error: `Route ${req.method} on ${req.path} not found`,
+    res.status(404).json({  
+        success: false,
+        data: null,
+        error: { message: `Route ${req.method} on ${req.path} not found`},
 });
 };
 

@@ -9,6 +9,16 @@ const getAllChats = (req:Request, res: Response): void => {
 };
 
 const createNewChat = (req:Request, res: Response): void => {
+    const { title, body } = req.body;
+
+    if (!title || !body) {
+        res.status(400).json({
+            success: false,
+            data: null,
+            error: { message: 'title and body are required'}
+        });
+        return;
+    };
     res.status(201).json({
         success: true,
         data: {},

@@ -6,6 +6,8 @@ import { queryRouter } from "./query.js";
 
 const router = Router();
 
+console.log("router hit");
+
 router.use("/auth", authRouter);
 router.use("/chats", chatRouter);
 router.use("/documents", docsRouter);
