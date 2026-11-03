@@ -1,17 +1,17 @@
 import { Router } from "express";
-import { getAllChats, createNewChat, getChatById, deleteChat,sendChatGetReply } from "../controllers/chats.js";
+import { getAllChats, createNewChat, getChatById, deleteChat } from "../controllers/chats.js";
 import { auth } from '../middleware/auth.js';
+import { createMessage } from '../controllers/messages.js';
 
-const chatRouter = Router();
 
-console.log("chats.ts loaded")
+const chatsRouter = Router();
 
-chatRouter.use(auth)
+chatsRouter.use(auth)
 
-chatRouter.get("/", getAllChats);
-chatRouter.post("/", createNewChat);
-chatRouter.get("/:id", getChatById);
-chatRouter.delete("/:id", deleteChat);
-chatRouter.post("/:id/messages", sendChatGetReply);
+chatsRouter.get("/", getAllChats);
+chatsRouter.post("/", createNewChat);
+chatsRouter.get("/:id", getChatById);
+chatsRouter.delete("/:id", deleteChat);
+chatsRouter.post('/:id/messages', createMessage);
 
-export { chatRouter };
+export { chatsRouter };
