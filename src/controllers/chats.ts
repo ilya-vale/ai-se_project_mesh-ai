@@ -1,4 +1,6 @@
 import type { Request, Response } from 'express';
+import Chat from '../models/chat.js';
+
 
 const getAllChats = (req:Request, res: Response): void => {
     res.status(200).json({
@@ -26,10 +28,12 @@ const createNewChat = (req:Request, res: Response): void => {
     });
 };
 
-const getChatById = (req:Request, res: Response): void => {
+const getChatById = async (req:Request, res: Response): Promise<void> => {
+    const userId = req.body.userId;
+    const chat = await Chat.findOne({ _id: req.params.id, userId: userId });
     res.status(200).json({
         success: true,
-        data: {},
+        data: { chat },
         error: null
     });
 };

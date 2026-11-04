@@ -5,7 +5,7 @@ import {createEmbedding} from '../utils/embeddings.js';
 import { rankBySimilarity } from '../utils/vector-search.js';
 import { buildContext } from '../utils/openai-client.js';
 import Chat from '../models/chat.js';
-import { askQuestionGetAnswer } from './query.js';
+import { askQuestionGetAnswer, response } from './query.js';
 import Message from '../models/message.js';
 
 
@@ -50,12 +50,11 @@ return;
   const context = buildContext(ranked);
 
   // TODO - call the LLM and extract the answer string (same as queryDocuments)
-  const qNA = await askQuestionGetAnswer(question, context)
+  const answer = response
   // TODO - save the question as a role: 'user' message linked to chatId
-
   const messageToBot = await Message.create({ role: 'user', chatId: chatId, content: question})
   // TODO - save the answer as an role: 'assistant' message linked to chatId
-const messageFromBot = await Message.create({role: 'assistant', chatId: chatId, content: qNA.answer})
+const messageFromBot = await Message.create({role: 'assistant', chatId: chatId, content: answer})
   // TODO - return both messages as an array with a 201
 
   res.status(201).json({
