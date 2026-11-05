@@ -46,12 +46,5 @@ const deleteChat = async (req:Request, res: Response): Promise<void> => {
     res.status(204).end();
 };
 
-const sendChatGetReply = (req:Request, res: Response): void => {
-    res.status(201).json({
-        success: true,
-        data: {},
-        error: null
-    });
-};
 
-export { getAllChats, createNewChat, getChatById, deleteChat, sendChatGetReply};
+export { getAllChats, createNewChat, getChatById, deleteChat };
