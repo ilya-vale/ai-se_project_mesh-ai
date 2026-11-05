@@ -38,7 +38,10 @@ const getChatById = async (req:Request, res: Response): Promise<void> => {
     });
 };
 
-const deleteChat = (req:Request, res: Response): void => {
+const deleteChat = async (req:Request, res: Response): Promise<void> => {
+    const userId = req.user!.userId;
+    const chat = await Chat.findOne({ _id: req.params.id, userId: userId });
+    await Chat.findByIdAndDelete(chat?._id);
     console.log("Chat deleted");
     res.status(204).end();
 };

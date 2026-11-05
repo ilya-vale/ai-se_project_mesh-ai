@@ -33,6 +33,19 @@ export const askQuestionGetAnswer = async (req: Request, res: Response) => {
   const ranked = rankBySimilarity(queryEmbedding, chunks, 5);
   const context = buildContext(ranked);
 
+  const answer = await generateAnswerFromLLM(question, context);
+
+  res.status(200).json({
+    success: true,
+    data: { question, chunks: ranked, answer },
+    error: null,
+  });
+};
+
+export const generateAnswerFromLLM = async (
+  question: string,
+  context: string,
+): Promise<string> => {
   const response = await getClient().chat.completions.create({
     model: LLM_MODEL,
     messages: [
@@ -49,12 +62,5 @@ export const askQuestionGetAnswer = async (req: Request, res: Response) => {
     temperature: 0.2,
   });
 
-  const answer = response.choices[0]!.message.content ?? 'No answer returned.';
-
-  res.status(200).json({
-    success: true,
-    data: { question, chunks: ranked, answer },
-    error: null,
-  });
+  return response.choices[0]!.message.content ?? 'No answer returned.';
 };
-

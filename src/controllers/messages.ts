@@ -5,7 +5,7 @@ import {createEmbedding} from '../utils/embeddings.js';
 import { rankBySimilarity } from '../utils/vector-search.js';
 import { buildContext } from '../utils/openai-client.js';
 import Chat from '../models/chat.js';
-import { askQuestionGetAnswer, response } from './query.js';
+import { generateAnswerFromLLM } from './query.js';
 import Message from '../models/message.js';
 
 
@@ -15,7 +15,16 @@ export const createMessage = async (req: Request, res: Response): Promise<void> 
   const chatId = req.params.id;
   const userId = req.user!.userId;
 
-  // TODO - validate that question is present (400 if not)
+  if (typeof chatId !== 'string') {
+    res.status(404).json({
+      success: false,
+      data: null,
+      error: { message: 'Chat not found' }
+    });
+    return;
+  }
+
+
 if (!question) {
     res.status(400).json({
       success: false,
@@ -24,7 +33,7 @@ if (!question) {
     });
     return;
   }
-  // TODO - find the chat by _id and userId; send a 404 if not found
+
 const userChat = await Chat.findOne({_id: chatId, userId: userId});
 if(!userChat) {
 res.status(404).json({
@@ -35,7 +44,6 @@ res.status(404).json({
 return;
 };
 
-  // RAG pipeline — same as queryDocuments
   const userDocs = await Document.find({ userId }, '_id');
   const docIds = userDocs.map((d) => d._id);
   const chunkRecords = await Chunk.find({ documentId: { $in: docIds } });
@@ -49,13 +57,9 @@ return;
   const ranked = rankBySimilarity(queryEmbedding, chunks, 5);
   const context = buildContext(ranked);
 
-  // TODO - call the LLM and extract the answer string (same as queryDocuments)
-  const answer = response
-  // TODO - save the question as a role: 'user' message linked to chatId
-  const messageToBot = await Message.create({ role: 'user', chatId: chatId, content: question})
-  // TODO - save the answer as an role: 'assistant' message linked to chatId
-const messageFromBot = await Message.create({role: 'assistant', chatId: chatId, content: answer})
-  // TODO - return both messages as an array with a 201
+  const answer = await generateAnswerFromLLM(question, context);
+  const messageToBot = await Message.create({ role: 'user', chatId: chatId, content: question});
+  const messageFromBot = await Message.create({ role: 'assistant', chatId: chatId, content: answer});
 
   res.status(201).json({
     success: true,

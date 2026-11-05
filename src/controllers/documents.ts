@@ -46,7 +46,7 @@ const uploadDoc = async (req: Request, res: Response): Promise<void> => {
     
     res.status(201).json({
         success: true,
-        data: {},
+        data: { document },
         error: null
     });
 };
@@ -64,16 +64,25 @@ const getDocsForCurrentUser = async (req: Request, res: Response): Promise<void>
     });
 };
 
-const getDocById = (req: Request, res: Response): void => {
+const getDocById = async (req: Request, res: Response): Promise<void> => {
+
+    const docId = req.params.id;
+
+    const document = await Document.findById(docId);
+
     res.status(200).json({
         success: true,
-        data: {},
+        data: { document },
         error: null
     });
 };
 
-const deleteDoc = (req: Request, res: Response): void => {
-    res.status(204).end();
+const deleteDoc = async (req: Request, res: Response): Promise<void> => {
+
+    const docId = req.params.id
+
+    await Document.findByIdAndDelete(docId);
+    res.status(204).end()
 };
 
 export { uploadDoc, getDocsForCurrentUser, getDocById, deleteDoc }
