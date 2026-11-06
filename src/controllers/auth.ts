@@ -4,16 +4,38 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 import mongoose from 'mongoose';
 
-const now = new Date();
-const getCurrentUser = ( req: Request, res: Response): void => {
 
-res.status(200).json({
-    success: true,
-    data: {
-      userId: "ilya_001",
-      email: "ilyavale@example.com",
-      name: "Ilya Vale",
-      createdAt: `${now}`
+const getCurrentUser = async ( req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    res.status(401).json({
+      success: false,
+      data: null,
+      error: {message: 'No userId authorized'}
+    });
+    return;
+  }
+
+  const currentUser = await User.findById(userId);
+
+  if (!currentUser) {
+    res.status(404).json({
+      success: false,
+      data: null,
+      error: { message: 'User not found' },
+    });
+    return;
+  }
+
+  const { email, name: userName } = currentUser;
+
+    res.status(200).json({
+      success: true,
+      data: {
+      userId,
+      email,
+      name: userName
     },
     error: null
 })
@@ -23,7 +45,7 @@ const createNewUser = async (req: Request, res: Response): Promise<void> => {
 
   const { email, password, name } = req.body;
 
-  if( !name || !email || !password ){
+  if ( !name || !email || !password ) {
     res.status(400).json({
       success: false,
       data: null,
@@ -32,7 +54,7 @@ const createNewUser = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  if( password.length < 8){
+  if ( password.length < 8) {
     res.status(400).json({
       success: false,
       data: null,
