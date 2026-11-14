@@ -3,12 +3,13 @@ import Chat from '../models/chat.js';
 
 
 
-const getAllChats = (req:Request, res: Response): void => {
-    
+const getAllChats = async (req:Request, res: Response): Promise<void> => {
+    const userId = req.user!.userId;
 
+    const chatsForUser = await Chat.find({userId})
     res.status(200).json({
         success: true,
-        data: {},
+        data: { chatsForUser },
         error: null
     });
 };
