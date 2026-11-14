@@ -5,6 +5,28 @@ import { rankBySimilarity } from '../utils/vector-search.js';
 import { getClient, LLM_MODEL, buildContext } from '../utils/openai-client.js';
 import Document from '../models/document.js';
 
+  export const getAnswerFromLLM = async (question: string, context: string): Promise<string> => {
+    const response = await getClient().chat.completions.create({
+    model: LLM_MODEL,
+    messages: [
+      {
+        role: 'system',
+        content:
+          'You are a helpful research assistant. Answer the question using only the provided context. If the context does not contain enough information to answer, say so.',
+      },
+      {
+        role: 'user',
+        content: `Context:\n${context}\n\nQuestion:\n${question}`,
+      },
+    ],
+    temperature: 0.2,
+  });
+
+  const answer = response.choices[0]!.message.content ?? 'No answer returned.';
+
+  return answer;
+  }
+
 export const askQuestionGetAnswer = async (req: Request, res: Response) => {
   const { question } = req.body;
 
@@ -33,34 +55,11 @@ export const askQuestionGetAnswer = async (req: Request, res: Response) => {
   const ranked = rankBySimilarity(queryEmbedding, chunks, 5);
   const context = buildContext(ranked);
 
-  const answer = await generateAnswerFromLLM(question, context);
+  const answer = await getAnswerFromLLM(question, context);
 
   res.status(200).json({
     success: true,
     data: { question, chunks: ranked, answer },
     error: null,
   });
-};
-
-export const generateAnswerFromLLM = async (
-  question: string,
-  context: string,
-): Promise<string> => {
-  const response = await getClient().chat.completions.create({
-    model: LLM_MODEL,
-    messages: [
-      {
-        role: 'system',
-        content:
-          'You are a helpful research assistant. Answer the question using only the provided context. If the context does not contain enough information to answer, say so.',
-      },
-      {
-        role: 'user',
-        content: `Context:\n${context}\n\nQuestion:\n${question}`,
-      },
-    ],
-    temperature: 0.2,
-  });
-
-  return response.choices[0]!.message.content ?? 'No answer returned.';
 };
