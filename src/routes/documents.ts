@@ -7,7 +7,7 @@ const docsRouter = Router();
 docsRouter.use(auth);
 
 const upload = multer({ dest: 'uploads/' });
- docsRouter.post('/', upload.single('file'), uploadDoc);
+docsRouter.post('/', upload.single('file'), uploadDoc);
 docsRouter.get("/", getDocsForCurrentUser);
 docsRouter.get("/:id", getDocById);
 docsRouter.delete("/:id", deleteDoc);

@@ -16,13 +16,13 @@ const getAllChats = async (req:Request, res: Response): Promise<void> => {
     }
     res.status(200).json({
         success: true,
-        data: chatsForUser ,
+        data: chatsForUser,
         error: null
     });
 };
 
 const createNewChat = async (req:Request, res: Response): Promise<void> => {
-    const { title } = req.body;
+    const title = req.body?.title;
     const userId = req.user!.userId;
     if (!title) {
         res.status(400).json({
