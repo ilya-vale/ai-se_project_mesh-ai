@@ -90,7 +90,7 @@ const userLogIn = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   if ( !email || !password ) {
-    res.status(401).json({
+    res.status(400).json({
       success: false,
       data: null,
       error: {message: 'email and password are required'}

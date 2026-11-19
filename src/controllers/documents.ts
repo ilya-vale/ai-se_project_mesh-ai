@@ -46,7 +46,7 @@ const uploadDoc = async (req: Request, res: Response): Promise<void> => {
     
     res.status(201).json({
         success: true,
-        data: { document },
+        data: document,
         error: null
     });
 };
@@ -57,9 +57,17 @@ const getDocsForCurrentUser = async (req: Request, res: Response): Promise<void>
 
     const userDocs = await Document.find({ userId })
 
+    if (userDocs.length === 0) {
+        res.status(404).json({
+            success: false,
+            data: null,
+            error: { message: 'No documents found'}
+        });
+    }
+
     res.status(200).json({
         success: true,
-        data: {userDocs},
+        data: userDocs,
         error: null
     });
 };
@@ -70,9 +78,17 @@ const getDocById = async (req: Request, res: Response): Promise<void> => {
 
     const document = await Document.findById(docId);
 
+    if (!document) {
+        res.status(404).json({
+            success: false,
+            data: null,
+            error: { message: 'Document not found' }
+        })
+    }
+
     res.status(200).json({
         success: true,
-        data: { document },
+        data: document,
         error: null
     });
 };
@@ -80,6 +96,14 @@ const getDocById = async (req: Request, res: Response): Promise<void> => {
 const deleteDoc = async (req: Request, res: Response): Promise<void> => {
 
     const docId = req.params.id
+
+    if (!docId) {    
+        res.status(400).json({
+            success: false,
+            data: null,
+            error: {message: 'Document already deleted/not found'}
+        });
+    }
 
     await Document.findByIdAndDelete(docId);
     res.status(204).end()

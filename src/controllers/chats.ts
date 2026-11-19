@@ -16,7 +16,7 @@ const getAllChats = async (req:Request, res: Response): Promise<void> => {
     }
     res.status(200).json({
         success: true,
-        data: { chatsForUser },
+        data: chatsForUser ,
         error: null
     });
 };
@@ -35,7 +35,7 @@ const createNewChat = async (req:Request, res: Response): Promise<void> => {
     const createdChat = await Chat.create({title, userId})
         res.status(201).json({
             success: true,
-            data: { createdChat },
+            data: createdChat,
             error: null
         });
 };

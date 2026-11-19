@@ -60,7 +60,7 @@ return;
   const context = buildContext(ranked);
 
   // TODO - call the LLM and extract the answer string (same as queryDocuments)
-  const answer = await getAnswerFromLLM(question, context);
+  const answer: string = await getAnswerFromLLM(question, context);
   // TODO - save the question as a role: 'user' message linked to chatId
   const messageFromUser = await Message.create({ role: 'user', chatId: chatId, content: question})
   // TODO - save the answer as an role: 'assistant' message linked to chatId
