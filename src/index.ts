@@ -41,7 +41,6 @@ mongoose.connect(process.env.MONGO_URI!)
     app.listen(port, () => {
         console.log('MongoDB connected');
         console.log(`Server running on port ${port}`);
-        console.log(process.env.MONGO_URI, process.env.NEBIUS_API_KEY);
     })
 }) 
 .catch((err) => {
